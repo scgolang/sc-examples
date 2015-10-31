@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/scgolang/sc"
 	"math/rand"
 	"time"
+
+	"github.com/scgolang/sc"
 )
 
 func main() {
@@ -30,14 +31,14 @@ func main() {
 		freq := p.Add("freq", 440)
 		gain := p.Add("gain", 0.5)
 		dur := p.Add("dur", 1)
-		bus := C(0)
-		env := EnvGen{
-			Env:        EnvPerc{Release: dur},
+		bus := sc.C(0)
+		env := sc.EnvGen{
+			Env:        sc.EnvPerc{Release: dur},
 			LevelScale: gain,
-			Done:       FreeEnclosing,
-		}.Rate(KR)
-		sig := SinOsc{Freq: freq}.Rate(AR).Mul(env)
-		return Out{bus, sig}.Rate(AR)
+			Done:       sc.FreeEnclosing,
+		}.Rate(sc.KR)
+		sig := sc.SinOsc{Freq: freq}.Rate(sc.AR).Mul(env)
+		return sc.Out{bus, sig}.Rate(sc.AR)
 	})
 	err = client.SendDef(def)
 	if err != nil {

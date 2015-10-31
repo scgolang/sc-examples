@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/scgolang/sc"
 )
 
@@ -17,21 +18,21 @@ func main() {
 		panic(err)
 	}
 	def := sc.NewSynthdef(synthName, func(p sc.Params) sc.Ugen {
-		bus, dust := C(0), Dust{Density: C(1)}.Rate(AR).Mul(C(0.5))
-		noise := WhiteNoise{}.Rate(AR)
-		decay := Decay{In: dust, Decay: C(0.3)}.Rate(AR).Mul(noise)
-		sig := DelayC{
+		bus, dust := sc.C(0), sc.Dust{Density: sc.C(1)}.Rate(sc.AR).Mul(sc.C(0.5))
+		noise := sc.WhiteNoise{}.Rate(sc.AR)
+		decay := sc.Decay{In: dust, Decay: sc.C(0.3)}.Rate(sc.AR).Mul(noise)
+		sig := sc.DelayC{
 			In:           decay,
-			MaxDelayTime: C(0.2),
-			DelayTime:    C(0.2),
-		}.Rate(AR).Add(decay)
-		return Out{bus, sig}.Rate(AR)
+			MaxDelayTime: sc.C(0.2),
+			DelayTime:    sc.C(0.2),
+		}.Rate(sc.AR).Add(decay)
+		return sc.Out{bus, sig}.Rate(sc.AR)
 	})
 	err = client.SendDef(def)
 	if err != nil {
 		panic(err)
 	}
 	synthID := client.NextSynthID()
-	_, err = defaultGroup.Synth(synthName, synthID, AddToTail, nil)
+	_, err = defaultGroup.Synth(synthName, synthID, sc.AddToTail, nil)
 	fmt.Printf("created synth %d\n", synthID)
 }

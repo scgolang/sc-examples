@@ -3,6 +3,7 @@ package main
 import (
 	// "encoding/json"
 	"fmt"
+
 	"github.com/rakyll/portmidi"
 	"github.com/scgolang/sc"
 	// "os"
@@ -28,14 +29,14 @@ func main() {
 	def := sc.NewSynthdef(synthName, func(p sc.Params) sc.Ugen {
 		freq := p.Add("freq", 440)
 		gain := p.Add("gain", 0.5)
-		bus := C(0)
-		env := EnvGen{
-			Env:        EnvPerc{},
-			Done:       FreeEnclosing,
+		bus := sc.C(0)
+		env := sc.EnvGen{
+			Env:        sc.EnvPerc{},
+			Done:       sc.FreeEnclosing,
 			LevelScale: gain,
-		}.Rate(KR)
-		sig := SinOsc{Freq: freq}.Rate(AR).Mul(env)
-		return Out{bus, sig}.Rate(AR)
+		}.Rate(sc.KR)
+		sig := sc.SinOsc{Freq: freq}.Rate(sc.AR).Mul(env)
+		return sc.Out{bus, sig}.Rate(sc.AR)
 	})
 	err = client.SendDef(def)
 	if err != nil {

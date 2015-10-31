@@ -19,8 +19,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	bufRoutine := BufferRoutineSine1
-	bufFlags := BufferFlagNormalize | BufferFlagWavetable | BufferFlagClear
+	bufRoutine := sc.BufferRoutineSine1
+	bufFlags := sc.BufferFlagNormalize | sc.BufferFlagWavetable | sc.BufferFlagClear
 	partials := []float32{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 	for i, p := range partials {
 		partials[i] = 1 / p
@@ -30,21 +30,21 @@ func main() {
 		panic(err)
 	}
 	def := sc.NewSynthdef(synthName, func(p sc.Params) sc.Ugen {
-		bus, gain := C(0), C(0.25)
-		freq, beats := C(200), C(0.7)
-		sig := COsc{
-			BufNum: C(float32(buf.Num())),
+		bus, gain := sc.C(0), sc.C(0.25)
+		freq, beats := sc.C(200), sc.C(0.7)
+		sig := sc.COsc{
+			BufNum: sc.C(float32(buf.Num())),
 			Freq:   freq,
 			Beats:  beats,
-		}.Rate(AR)
-		return Out{bus, sig.Mul(gain)}.Rate(AR)
+		}.Rate(sc.AR)
+		return sc.Out{bus, sig.Mul(gain)}.Rate(sc.AR)
 	})
 	err = client.SendDef(def)
 	if err != nil {
 		panic(err)
 	}
 	synthID := client.NextSynthID()
-	_, err = defaultGroup.Synth(synthName, synthID, AddToTail, nil)
+	_, err = defaultGroup.Synth(synthName, synthID, sc.AddToTail, nil)
 	if err != nil {
 		panic(err)
 	}

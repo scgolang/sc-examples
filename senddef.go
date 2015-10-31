@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/scgolang/sc"
 	"log"
+
+	"github.com/scgolang/sc"
 )
 
 func main() {
@@ -13,16 +14,16 @@ func main() {
 		log.Fatal(err)
 	}
 	def := sc.NewSynthdef("SineTone", func(p sc.Params) sc.Ugen {
-		bus, chaos := C(0), Line{C(1.0), C(2.0), C(10), DoNothing}.Rate(KR)
-		sig := Crackle{chaos}.Rate(AR).MulAdd(C(0.5), C(0.5))
-		return Out{bus, sig}.Rate(AR)
+		bus, chaos := sc.C(0), sc.Line{sc.C(1.0), sc.C(2.0), sc.C(10), sc.DoNothing}.Rate(sc.KR)
+		sig := sc.Crackle{chaos}.Rate(sc.AR).MulAdd(sc.C(0.5), sc.C(0.5))
+		return sc.Out{bus, sig}.Rate(sc.AR)
 	})
 	err = client.SendDef(def)
 	if err != nil {
 		log.Fatal(err)
 	}
 	id := client.NextSynthID()
-	_, err = client.Synth("SineTone", id, AddToTail, DefaultGroupID, nil)
+	_, err = client.Synth("SineTone", id, sc.AddToTail, sc.DefaultGroupID, nil)
 	if err != nil {
 		log.Fatal(err)
 	}

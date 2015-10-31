@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	const synthName = "LFCubExample"
+	const synthName = "sc.LFCubExample"
 	client := sc.NewClient("127.0.0.1:57112")
 	err := client.Connect("127.0.0.1:57110")
 	if err != nil {
@@ -17,17 +17,17 @@ func main() {
 		panic(err)
 	}
 	def := sc.NewSynthdef(synthName, func(p sc.Params) sc.Ugen {
-		bus, gain := C(0), C(0.1)
-		lfo1 := LFCub{Freq: C(0.2)}.Rate(KR).MulAdd(C(8), C(10))
-		lfo2 := LFCub{Freq: lfo1}.Rate(KR).MulAdd(C(400), C(800))
-		sig := LFCub{Freq: lfo2}.Rate(AR).Mul(gain)
-		return Out{bus, sig}.Rate(AR)
+		bus, gain := sc.C(0), sc.C(0.1)
+		lfo1 := sc.LFCub{Freq: sc.C(0.2)}.Rate(sc.KR).MulAdd(sc.C(8), sc.C(10))
+		lfo2 := sc.LFCub{Freq: lfo1}.Rate(sc.KR).MulAdd(sc.C(400), sc.C(800))
+		sig := sc.LFCub{Freq: lfo2}.Rate(sc.AR).Mul(gain)
+		return sc.Out{bus, sig}.Rate(sc.AR)
 	})
 	err = client.SendDef(def)
 	if err != nil {
 		panic(err)
 	}
 	synthID := client.NextSynthID()
-	_, err = defaultGroup.Synth(synthName, synthID, AddToTail, nil)
+	_, err = defaultGroup.Synth(synthName, synthID, sc.AddToTail, nil)
 	fmt.Printf("created synth %d\n", synthID)
 }

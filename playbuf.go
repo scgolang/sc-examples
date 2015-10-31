@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/scgolang/sc"
 	"math/rand"
 	"time"
+
+	"github.com/scgolang/sc"
 )
 
 func main() {
@@ -31,14 +32,14 @@ func main() {
 	def := sc.NewSynthdef(synthName, func(p sc.Params) sc.Ugen {
 		speed := p.Add("speed", 1.0)
 		gain := p.Add("gain", 0.5)
-		bus := C(0)
-		sig := PlayBuf{
+		bus := sc.C(0)
+		sig := sc.PlayBuf{
 			NumChannels: 1,
-			BufNum:      C(float32(buf.Num())),
+			BufNum:      sc.C(float32(buf.Num())),
 			Speed:       speed,
-			Done:        FreeEnclosing,
-		}.Rate(AR).Mul(gain)
-		return Out{bus, sig}.Rate(AR)
+			Done:        sc.FreeEnclosing,
+		}.Rate(sc.AR).Mul(gain)
+		return sc.Out{bus, sig}.Rate(sc.AR)
 	})
 	err = client.SendDef(def)
 	if err != nil {

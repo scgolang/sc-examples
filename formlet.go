@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/scgolang/sc"
 )
 
@@ -17,22 +18,22 @@ func main() {
 		panic(err)
 	}
 	def := sc.NewSynthdef(synthName, func(p sc.Params) sc.Ugen {
-		bus, sine := C(0), SinOsc{Freq: C(5)}.Rate(KR).MulAdd(C(20), C(300))
-		blip := Blip{Freq: sine, Harm: C(1000)}.Rate(AR).Mul(C(0.1))
-		line := XLine{Start: C(1500), End: C(700), Dur: C(8)}.Rate(KR)
-		sig := Formlet{
+		bus, sine := sc.C(0), sc.SinOsc{Freq: sc.C(5)}.Rate(sc.KR).MulAdd(sc.C(20), sc.C(300))
+		blip := sc.Blip{Freq: sine, Harm: sc.C(1000)}.Rate(sc.AR).Mul(sc.C(0.1))
+		line := sc.XLine{Start: sc.C(1500), End: sc.C(700), Dur: sc.C(8)}.Rate(sc.KR)
+		sig := sc.Formlet{
 			In:         blip,
 			Freq:       line,
-			AttackTime: C(0.005),
-			DecayTime:  C(0.4),
-		}.Rate(AR)
-		return Out{bus, sig}.Rate(AR)
+			AttackTime: sc.C(0.005),
+			DecayTime:  sc.C(0.4),
+		}.Rate(sc.AR)
+		return sc.Out{bus, sig}.Rate(sc.AR)
 	})
 	err = client.SendDef(def)
 	if err != nil {
 		panic(err)
 	}
 	synthID := client.NextSynthID()
-	_, err = defaultGroup.Synth(synthName, synthID, AddToTail, nil)
+	_, err = defaultGroup.Synth(synthName, synthID, sc.AddToTail, nil)
 	fmt.Printf("created synth %d\n", synthID)
 }

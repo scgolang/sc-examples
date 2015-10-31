@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/scgolang/sc"
 	"go/ast"
 	"go/parser"
 	"go/token"

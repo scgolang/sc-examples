@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	const synthName = "LFPulseExample"
+	const synthName = "sc.LFPulseExample"
 	client := sc.NewClient("127.0.0.1:57112")
 	err := client.Connect("127.0.0.1:57110")
 	if err != nil {
@@ -17,18 +17,18 @@ func main() {
 		panic(err)
 	}
 	def := sc.NewSynthdef(synthName, func(p sc.Params) sc.Ugen {
-		lfoFreq, lfoPhase, lfoWidth := C(3), C(0), C(0.3)
-		bus, gain := C(0), C(0.1)
-		freq := LFPulse{lfoFreq, lfoPhase, lfoWidth}.Rate(KR).MulAdd(C(200), C(200))
-		iphase, width := C(0), C(0.2)
-		sig := LFPulse{freq, iphase, width}.Rate(AR).Mul(gain)
-		return Out{bus, sig}.Rate(AR)
+		lfoFreq, lfoPhase, lfoWidth := sc.C(3), sc.C(0), sc.C(0.3)
+		bus, gain := sc.C(0), sc.C(0.1)
+		freq := sc.LFPulse{lfoFreq, lfoPhase, lfoWidth}.Rate(sc.KR).MulAdd(sc.C(200), sc.C(200))
+		iphase, width := sc.C(0), sc.C(0.2)
+		sig := sc.LFPulse{freq, iphase, width}.Rate(sc.AR).Mul(gain)
+		return sc.Out{bus, sig}.Rate(sc.AR)
 	})
 	err = client.SendDef(def)
 	if err != nil {
 		panic(err)
 	}
 	synthID := client.NextSynthID()
-	_, err = defaultGroup.Synth(synthName, synthID, AddToTail, nil)
+	_, err = defaultGroup.Synth(synthName, synthID, sc.AddToTail, nil)
 	fmt.Printf("created synth %d\n", synthID)
 }

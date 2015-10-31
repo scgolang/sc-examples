@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/scgolang/sc"
 	"log"
 	"time"
+
+	"github.com/scgolang/sc"
 )
 
 func main() {
@@ -15,14 +16,14 @@ func main() {
 	}
 	// create a synthdef
 	def := sc.NewSynthdef("Envgen1", func(p sc.Params) sc.Ugen {
-		bus := C(0)
-		attack, release := C(0.01), C(1)
-		level, curveature := C(1), C(-4)
-		perc := EnvPerc{attack, release, level, curveature}
-		gate, levelScale, levelBias, timeScale := C(1), C(1), C(0), C(1)
-		ampEnv := EnvGen{perc, gate, levelScale, levelBias, timeScale, FreeEnclosing}.Rate(KR)
-		noise := PinkNoise{}.Rate(AR).Mul(ampEnv)
-		return Out{bus, noise}.Rate(AR)
+		bus := sc.C(0)
+		attack, release := sc.C(0.01), sc.C(1)
+		level, curveature := sc.C(1), sc.C(-4)
+		perc := sc.EnvPerc{attack, release, level, curveature}
+		gate, levelScale, levelBias, timeScale := sc.C(1), sc.C(1), sc.C(0), sc.C(1)
+		ampEnv := sc.EnvGen{perc, gate, levelScale, levelBias, timeScale, sc.FreeEnclosing}.Rate(sc.KR)
+		noise := sc.PinkNoise{}.Rate(sc.AR).Mul(ampEnv)
+		return sc.Out{bus, noise}.Rate(sc.AR)
 	})
 	err = client.SendDef(def)
 	if err != nil {
@@ -30,7 +31,7 @@ func main() {
 	}
 	time.Sleep(1000 * time.Millisecond)
 	id := client.NextSynthID()
-	_, err = client.Synth("Envgen1", id, AddToTail, DefaultGroupID, nil)
+	_, err = client.Synth("Envgen1", id, sc.AddToTail, sc.DefaultGroupID, nil)
 	if err != nil {
 		log.Fatal(err)
 	}

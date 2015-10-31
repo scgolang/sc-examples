@@ -16,24 +16,24 @@ func main() {
 		panic(err)
 	}
 	def := sc.NewSynthdef(synthName, func(p sc.Params) sc.Ugen {
-		bus := C(0)
-		line := XLine{
-			Start: C(0.0001),
-			End:   C(0.01),
-			Dur:   C(20),
-		}.Rate(KR)
-		sig := CombC{
-			In:           WhiteNoise{}.Rate(AR).Mul(C(0.01)),
-			MaxDelayTime: C(0.01),
+		bus := sc.C(0)
+		line := sc.XLine{
+			Start: sc.C(0.0001),
+			End:   sc.C(0.01),
+			Dur:   sc.C(20),
+		}.Rate(sc.KR)
+		sig := sc.CombC{
+			In:           sc.WhiteNoise{}.Rate(sc.AR).Mul(sc.C(0.01)),
+			MaxDelayTime: sc.C(0.01),
 			DelayTime:    line,
-			DecayTime:    C(0.2),
-		}.Rate(AR)
-		return Out{bus, sig}.Rate(AR)
+			DecayTime:    sc.C(0.2),
+		}.Rate(sc.AR)
+		return sc.Out{bus, sig}.Rate(sc.AR)
 	})
 	err = client.SendDef(def)
 	if err != nil {
 		panic(err)
 	}
 	synthID := client.NextSynthID()
-	_, err = defaultGroup.Synth(synthName, synthID, AddToTail, nil)
+	_, err = defaultGroup.Synth(synthName, synthID, sc.AddToTail, nil)
 }

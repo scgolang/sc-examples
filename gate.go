@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/scgolang/sc"
 )
 
@@ -17,16 +18,16 @@ func main() {
 		panic(err)
 	}
 	def := sc.NewSynthdef(synthName, func(p sc.Params) sc.Ugen {
-		bus, noise := C(0), WhiteNoise{}.Rate(KR)
-		pulse := LFPulse{Freq: C(1.333), Iphase: C(0.5)}.Rate(KR)
-		sig := Gate{In: noise, Trig: pulse}.Rate(AR)
-		return Out{bus, sig}.Rate(AR)
+		bus, noise := sc.C(0), sc.WhiteNoise{}.Rate(sc.KR)
+		pulse := sc.LFPulse{Freq: sc.C(1.333), Iphase: sc.C(0.5)}.Rate(sc.KR)
+		sig := sc.Gate{In: noise, Trig: pulse}.Rate(sc.AR)
+		return sc.Out{bus, sig}.Rate(sc.AR)
 	})
 	err = client.SendDef(def)
 	if err != nil {
 		panic(err)
 	}
 	synthID := client.NextSynthID()
-	_, err = defaultGroup.Synth(synthName, synthID, AddToTail, nil)
+	_, err = defaultGroup.Synth(synthName, synthID, sc.AddToTail, nil)
 	fmt.Printf("created synth %d\n", synthID)
 }
