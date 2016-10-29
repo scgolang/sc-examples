@@ -7,8 +7,8 @@ import (
 
 func main() {
 	const synthName = "sc.LFCubExample"
-	client := sc.NewClient("127.0.0.1:57112")
-	err := client.Connect("127.0.0.1:57110")
+
+	client, err := sc.NewClient("udp", "127.0.0.1:57112", "127.0.0.1:57110")
 	if err != nil {
 		panic(err)
 	}

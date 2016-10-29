@@ -16,32 +16,38 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	oscServer := osc.NewServer(listenAddr)
+
+	conn, err := osc.ListenUDP("udp", addr)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	errChan := make(chan error)
 	doneChan := make(chan *osc.Message)
-	err = oscServer.AddMsgHandler("/done", func(msg *osc.Message) {
-		doneChan <- msg
-	})
-	if err != nil {
-		log.Println("could not send quit message")
-		log.Fatal(err)
+
+	dispatcher := osc.Dispatcher{
+		"/done": func(msg *osc.Message) error {
+			doneChan <- msg
+			return nil
+		},
 	}
 	go func() {
-		errChan <- oscServer.ListenAndDispatch()
+		if err := conn.Serve(dispatcher); err != nil {
+			log.Fatal(err)
+		}
 	}()
-	err = <-oscServer.Listening
+	log.Println("sending quit request")
+	quitReq, err := osc.NewMessage("/quit")
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("sending quit request")
-	quitReq := osc.NewMessage("/quit")
-	err = oscServer.SendTo(addr, quitReq)
-	if err != nil {
+
+	if err := conn.Send(quitReq); err != nil {
 		log.Fatal(err)
 	}
 	select {
 	case quitResp := <-doneChan:
-		osc.PrintMessage(quitResp)
+		log.Printf("%+v\n", quitResp)
 	case err := <-errChan:
 		log.Fatal(err)
 	}

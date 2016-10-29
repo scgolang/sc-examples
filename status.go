@@ -5,16 +5,16 @@ import (
 	"github.com/scgolang/sc"
 	"log"
 	"os"
+	"time"
 )
 
 // Request status from scsynth
 func main() {
-	client := sc.NewClient("127.0.0.1:57121")
-	err := client.Connect("127.0.0.1:57120")
+	client, err := sc.NewClient("udp", "127.0.0.1:57121", "127.0.0.1:57120")
 	if err != nil {
 		log.Fatal(err)
 	}
-	status, err := client.GetStatus()
+	status, err := client.Status(time.Minute)
 	if err != nil {
 		log.Fatal(err)
 	}

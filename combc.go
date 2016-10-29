@@ -6,8 +6,8 @@ import (
 
 func main() {
 	const synthName = "CombCExample"
-	client := sc.NewClient("127.0.0.1:57112")
-	err := client.Connect("127.0.0.1:57110")
+
+	client, err := sc.NewClient("udp", "127.0.0.1:57112", "127.0.0.1:57110")
 	if err != nil {
 		panic(err)
 	}
@@ -22,11 +22,12 @@ func main() {
 			End:   sc.C(0.01),
 			Dur:   sc.C(20),
 		}.Rate(sc.KR)
-		sig := sc.CombC{
-			In:           sc.WhiteNoise{}.Rate(sc.AR).Mul(sc.C(0.01)),
-			MaxDelayTime: sc.C(0.01),
-			DelayTime:    line,
-			DecayTime:    sc.C(0.2),
+		sig := sc.Comb{
+			Interpolation: sc.InterpolationCubic,
+			In:            sc.WhiteNoise{}.Rate(sc.AR).Mul(sc.C(0.01)),
+			MaxDelayTime:  sc.C(0.01),
+			DelayTime:     line,
+			DecayTime:     sc.C(0.2),
 		}.Rate(sc.AR)
 		return sc.Out{bus, sig}.Rate(sc.AR)
 	})

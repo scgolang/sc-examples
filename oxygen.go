@@ -12,9 +12,9 @@ import (
 func main() {
 	var synthID int32
 	const synthName = "sineTone"
-	// setup supercollider client
-	client := sc.NewClient("127.0.0.1:57121")
-	err := client.Connect("127.0.0.1:57120")
+
+	// Set up SuperCollider client.
+	client, err := sc.NewClient("udp", "127.0.0.1:57121", "127.0.0.1:57120")
 	if err != nil {
 		panic(err)
 	}
@@ -72,7 +72,7 @@ func main() {
 				// Note On
 				synthID = client.NextSynthID()
 				ctls := map[string]float32{
-					"freq": sc.Midicps(int(event.Data1)),
+					"freq": sc.Midicps(float32(event.Data1)),
 					"gain": float32(event.Data2 / 127.0),
 				}
 				_, err = client.Synth(synthName, synthID, sc.AddToTail, sc.DefaultGroupID, ctls)

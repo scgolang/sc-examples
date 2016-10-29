@@ -14,8 +14,7 @@ func main() {
 	var gain, dur float32
 
 	// setup supercollider client
-	client := sc.NewClient("127.0.0.1:57111")
-	err := client.Connect("127.0.0.1:57110")
+	client, err := sc.NewClient("udp", "127.0.0.1:57111", "127.0.0.1:57110")
 	if err != nil {
 		panic(err)
 	}
@@ -53,7 +52,7 @@ func main() {
 		gain = rand.Float32()
 		dur = rand.Float32()
 		ctls := map[string]float32{
-			"freq": sc.Midicps(note),
+			"freq": sc.Midicps(float32(note)),
 			"gain": gain,
 			"dur":  dur,
 		}

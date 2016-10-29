@@ -14,8 +14,7 @@ func main() {
 	var speed, gain float32
 
 	// setup supercollider client
-	client := sc.NewClient("127.0.0.1:57111")
-	err := client.Connect("127.0.0.1:57110")
+	client, err := sc.NewClient("udp", "127.0.0.1:57111", "127.0.0.1:57110")
 	if err != nil {
 		panic(err)
 	}
@@ -24,7 +23,7 @@ func main() {
 		panic(err)
 	}
 	// read a wav file
-	buf, err := client.ReadBuffer(wavFile)
+	buf, err := client.ReadBuffer(wavFile, 1)
 	if err != nil {
 		panic(err)
 	}
@@ -35,7 +34,7 @@ func main() {
 		bus := sc.C(0)
 		sig := sc.PlayBuf{
 			NumChannels: 1,
-			BufNum:      sc.C(float32(buf.Num())),
+			BufNum:      sc.C(float32(buf.Num)),
 			Speed:       speed,
 			Done:        sc.FreeEnclosing,
 		}.Rate(sc.AR).Mul(gain)

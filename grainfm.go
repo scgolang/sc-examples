@@ -8,8 +8,8 @@ import (
 
 func main() {
 	const synthName = "GrainFMExample"
-	client := sc.NewClient("127.0.0.1:57112")
-	err := client.Connect("127.0.0.1:57110")
+
+	client, err := sc.NewClient("udp", "127.0.0.1:57112", "127.0.0.1:57110")
 	if err != nil {
 		panic(err)
 	}
@@ -24,10 +24,9 @@ func main() {
 		mousey := sc.MouseY{Min: sc.C(0), Max: sc.C(400)}.Rate(sc.KR)
 		freqdev := sc.WhiteNoise{}.Rate(sc.KR).Mul(mousey)
 		env := sc.Env{
-			Levels:     []sc.Input{sc.C(0), sc.C(1), sc.C(0)},
-			Times:      []sc.Input{sc.C(1), sc.C(1)},
-			CurveTypes: []sc.Input{sc.CurveSine, sc.CurveSine},
-			// Curvature:   CurveSine,
+			Levels:      []sc.Input{sc.C(0), sc.C(1), sc.C(0)},
+			Times:       []sc.Input{sc.C(1), sc.C(1)},
+			Curve:       []string{"sine", "sine"},
 			ReleaseNode: sc.C(1),
 		}
 		ampenv := sc.EnvGen{
@@ -37,7 +36,7 @@ func main() {
 			Done:       sc.FreeEnclosing,
 		}.Rate(sc.KR)
 		trig := sc.Impulse{Freq: sc.C(10)}.Rate(sc.KR)
-		modIndex := sc.LFNoise1{}.Rate(sc.KR).MulAdd(sc.C(5), sc.C(5))
+		modIndex := sc.LFNoise{Interpolation: sc.NoiseLinear}.Rate(sc.KR).MulAdd(sc.C(5), sc.C(5))
 		pan := sc.MouseX{Min: sc.C(-1), Max: sc.C(1)}.Rate(sc.KR)
 		sig := sc.GrainFM{
 			NumChannels: 2,

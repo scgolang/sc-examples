@@ -5,8 +5,7 @@ import (
 )
 
 func main() {
-	client := sc.NewClient("127.0.0.1:57112")
-	err := client.Connect("127.0.0.1:57120")
+	client, err := sc.NewClient("udp", "127.0.0.1:57112", "127.0.0.1:57120")
 	if err != nil {
 		panic(err)
 	}

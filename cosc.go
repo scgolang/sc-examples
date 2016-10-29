@@ -6,8 +6,8 @@ import (
 
 func main() {
 	const synthName = "COscExample"
-	client := sc.NewClient("127.0.0.1:57120")
-	err := client.Connect("127.0.0.1:57110")
+
+	client, err := sc.NewClient("udp", "127.0.0.1:57120", "127.0.0.1:57110")
 	if err != nil {
 		panic(err)
 	}
@@ -33,7 +33,7 @@ func main() {
 		bus, gain := sc.C(0), sc.C(0.25)
 		freq, beats := sc.C(200), sc.C(0.7)
 		sig := sc.COsc{
-			BufNum: sc.C(float32(buf.Num())),
+			BufNum: sc.C(float32(buf.Num)),
 			Freq:   freq,
 			Beats:  beats,
 		}.Rate(sc.AR)
