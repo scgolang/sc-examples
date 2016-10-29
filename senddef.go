@@ -2,13 +2,14 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"github.com/scgolang/sc"
 )
 
 func main() {
 	// create a client and connect to the server
-	client, err := sc.NewClient("udp", "127.0.0.1:57121", "127.0.0.1:57120")
+	client, err := sc.NewClient("udp", "127.0.0.1:57121", "127.0.0.1:57120", 5*time.Second)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -17,13 +18,12 @@ func main() {
 		sig := sc.Crackle{chaos}.Rate(sc.AR).MulAdd(sc.C(0.5), sc.C(0.5))
 		return sc.Out{bus, sig}.Rate(sc.AR)
 	})
-	err = client.SendDef(def)
-	if err != nil {
+	if err := client.SendDef(def); err != nil {
 		log.Fatal(err)
 	}
+
 	id := client.NextSynthID()
-	_, err = client.Synth("SineTone", id, sc.AddToTail, sc.DefaultGroupID, nil)
-	if err != nil {
+	if _, err = client.Synth("SineTone", id, sc.AddToTail, sc.DefaultGroupID, nil); err != nil {
 		log.Fatal(err)
 	}
 }

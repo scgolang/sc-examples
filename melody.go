@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"math/rand"
 	"time"
 
@@ -14,17 +15,17 @@ func main() {
 	var gain, dur float32
 
 	// setup supercollider client
-	client, err := sc.NewClient("udp", "127.0.0.1:57111", "127.0.0.1:57110")
+	client, err := sc.NewClient("udp", "127.0.0.1:57111", "127.0.0.1:57110", 5*time.Second)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	defaultGroup, err := client.AddDefaultGroup()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	err = client.DumpOSC(int32(1))
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	def := sc.NewSynthdef(synthName, func(p sc.Params) sc.Ugen {
 		freq := p.Add("freq", 440)
@@ -41,7 +42,7 @@ func main() {
 	})
 	err = client.SendDef(def)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	ticker := time.NewTicker(125 * time.Millisecond)

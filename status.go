@@ -10,7 +10,7 @@ import (
 
 // Request status from scsynth
 func main() {
-	client, err := sc.NewClient("udp", "127.0.0.1:57121", "127.0.0.1:57120")
+	client, err := sc.NewClient("udp", "127.0.0.1:57121", "127.0.0.1:57120", 5*time.Second)
 	if err != nil {
 		log.Fatal(err)
 	}

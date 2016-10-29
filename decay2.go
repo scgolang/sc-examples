@@ -1,19 +1,22 @@
 package main
 
 import (
+	"log"
+	"time"
+
 	"github.com/scgolang/sc"
 )
 
 func main() {
 	const synthName = "Decay2Example"
 
-	client, err := sc.NewClient("udp", "127.0.0.1:57112", "127.0.0.1:57110")
+	client, err := sc.NewClient("udp", "127.0.0.1:57110", "127.0.0.1:57120", 5*time.Second)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	defaultGroup, err := client.AddDefaultGroup()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	def := sc.NewSynthdef(synthName, func(p sc.Params) sc.Ugen {
 		bus := sc.C(0)
@@ -23,10 +26,12 @@ func main() {
 		gain := sc.SinOsc{Freq: sc.C(600)}.Rate(sc.AR)
 		return sc.Out{bus, sig.Mul(gain)}.Rate(sc.AR)
 	})
-	err = client.SendDef(def)
-	if err != nil {
-		panic(err)
+	if err := client.SendDef(def); err != nil {
+		log.Fatal(err)
 	}
+
 	synthID := client.NextSynthID()
-	_, err = defaultGroup.Synth(synthName, synthID, sc.AddToTail, nil)
+	if _, err := defaultGroup.Synth(synthName, synthID, sc.AddToTail, nil); err != nil {
+		log.Fatal(err)
+	}
 }

@@ -1,12 +1,11 @@
 package main
 
 import (
-	// "encoding/json"
-	"fmt"
+	"log"
+	"time"
 
 	"github.com/rakyll/portmidi"
 	"github.com/scgolang/sc"
-	// "os"
 )
 
 func main() {
@@ -14,17 +13,17 @@ func main() {
 	const synthName = "sineTone"
 
 	// Set up SuperCollider client.
-	client, err := sc.NewClient("udp", "127.0.0.1:57121", "127.0.0.1:57120")
+	client, err := sc.NewClient("udp", "127.0.0.1:57121", "127.0.0.1:57120", 5*time.Second)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	_, err = client.AddDefaultGroup()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	err = client.DumpOSC(int32(1))
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	def := sc.NewSynthdef(synthName, func(p sc.Params) sc.Ugen {
 		freq := p.Add("freq", 440)
@@ -40,7 +39,7 @@ func main() {
 	})
 	err = client.SendDef(def)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	// initialize midi
@@ -51,23 +50,23 @@ func main() {
 	// enc := json.NewEncoder(os.Stdout)
 	// for i := 0; i < deviceCount; i++ {
 	// 	info := portmidi.GetDeviceInfo(portmidi.DeviceId(i))
-	// 	fmt.Printf("device %d - ", i)
+	// 	log.Printf("device %d - ", i)
 	// 	err = enc.Encode(info)
 	// 	if err != nil {
-	// 		panic(err)
+	// 		log.Fatal(err)
 	// 	}
 	// }
 
 	// setup midi input stream and listen for midi events
 	in, err := portmidi.NewInputStream(3, 1024)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	ch := in.Listen()
 	for event := range ch {
 		if event.Status == 144 {
 			// MIDI note
-			fmt.Printf("Note %-3d Velocity %-3d\n", event.Data1, event.Data2)
+			log.Printf("Note %-3d Velocity %-3d\n", event.Data1, event.Data2)
 			if event.Data2 > 0 {
 				// Note On
 				synthID = client.NextSynthID()

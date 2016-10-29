@@ -5,12 +5,13 @@ import (
 	"github.com/scgolang/sc"
 	"log"
 	"os"
+	"time"
 )
 
 func main() {
 	var err error
 	// create a client and connect to the server
-	client, err := sc.NewClient("udp", "127.0.0.1:57121", "127.0.0.1:57120")
+	client, err := sc.NewClient("udp", "127.0.0.1:57121", "127.0.0.1:57120", 5*time.Second)
 	if err != nil {
 		log.Fatal(err)
 	}

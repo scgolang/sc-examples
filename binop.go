@@ -9,7 +9,7 @@ import (
 
 func main() {
 	// create a client and connect to the server
-	client, err := sc.NewClient("udp", "127.0.0.1:57121", "127.0.0.1:57120")
+	client, err := sc.NewClient("udp", "127.0.0.1:57121", "127.0.0.1:57120", 5*time.Second)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -24,14 +24,14 @@ func main() {
 		noise := sc.PinkNoise{}.Rate(sc.AR).Mul(ampEnv)
 		return sc.Out{bus, noise}.Rate(sc.AR)
 	})
-	err = client.SendDef(def)
-	if err != nil {
+	if err := client.SendDef(def); err != nil {
 		log.Fatal(err)
 	}
+
 	time.Sleep(1000 * time.Millisecond)
+
 	id := client.NextSynthID()
-	_, err = client.Synth("Envgen1", id, sc.AddToTail, sc.DefaultGroupID, nil)
-	if err != nil {
+	if _, err = client.Synth("Envgen1", id, sc.AddToTail, sc.DefaultGroupID, nil); err != nil {
 		log.Fatal(err)
 	}
 	time.Sleep(5000 * time.Millisecond)

@@ -14,7 +14,7 @@ func main() {
 	var speed, gain float32
 
 	// setup supercollider client
-	client, err := sc.NewClient("udp", "127.0.0.1:57111", "127.0.0.1:57110")
+	client, err := sc.NewClient("udp", "127.0.0.1:57110", "127.0.0.1:57120", 5*time.Second)
 	if err != nil {
 		panic(err)
 	}

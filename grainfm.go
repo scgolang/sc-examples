@@ -1,22 +1,35 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"time"
 
 	"github.com/scgolang/sc"
 )
 
 func main() {
-	const synthName = "GrainFMExample"
-
-	client, err := sc.NewClient("udp", "127.0.0.1:57112", "127.0.0.1:57110")
-	if err != nil {
-		panic(err)
+	const (
+		synthName = "GrainFMExample"
+	)
+	server := &sc.Server{
+		Network: "udp",
+		Port:    57120,
 	}
+	if err := server.Start(); err != nil {
+		log.Fatalf("Could not start scsynth: %s", err)
+	}
+	defer func() { _ = server.Process.Kill() }()
+
+	client, err := sc.NewClient("udp", "127.0.0.1:57110", "127.0.0.1:57120", 5*time.Second)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	defaultGroup, err := client.AddDefaultGroup()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
+
 	def := sc.NewSynthdef(synthName, func(p sc.Params) sc.Ugen {
 		gate := p.Add("gate", 1)
 		amp := p.Add("amp", 1)
@@ -49,11 +62,17 @@ func main() {
 		}.Rate(sc.AR)
 		return sc.Out{bus, sig.Mul(ampenv)}.Rate(sc.AR)
 	})
-	err = client.SendDef(def)
-	if err != nil {
-		panic(err)
+	if err := client.SendDef(def); err != nil {
+		log.Fatal(err)
 	}
 	synthID := client.NextSynthID()
-	_, err = defaultGroup.Synth(synthName, synthID, sc.AddToTail, nil)
-	fmt.Printf("created synth %d\n", synthID)
+	if _, err := defaultGroup.Synth(synthName, synthID, sc.AddToTail, nil); err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("created synth %d\n", synthID)
+
+	if err := server.Wait(); err != nil {
+		log.Fatal(err)
+	}
 }

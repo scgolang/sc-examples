@@ -1,7 +1,8 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"time"
 
 	"github.com/scgolang/sc"
 )
@@ -9,13 +10,13 @@ import (
 func main() {
 	const synthName = "Balance2Example"
 
-	client, err := sc.NewClient("udp", "127.0.0.1:57112", "127.0.0.1:57110")
+	client, err := sc.NewClient("udp", "127.0.0.1:57110", "127.0.0.1:57120", 5*time.Second)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	defaultGroup, err := client.AddDefaultGroup()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	def := sc.NewSynthdef(synthName, func(p sc.Params) sc.Ugen {
 		bus, gain := sc.C(0), sc.C(0.1)
@@ -24,11 +25,13 @@ func main() {
 		sig := sc.Balance2{L: l, R: r, Pos: pos, Level: gain}.Rate(sc.AR)
 		return sc.Out{bus, sig}.Rate(sc.AR)
 	})
-	err = client.SendDef(def)
-	if err != nil {
-		panic(err)
+	if err := client.SendDef(def); err != nil {
+		log.Fatal(err)
 	}
+
 	synthID := client.NextSynthID()
-	_, err = defaultGroup.Synth(synthName, synthID, sc.AddToTail, nil)
-	fmt.Printf("created synth %d\n", synthID)
+	if _, err := defaultGroup.Synth(synthName, synthID, sc.AddToTail, nil); err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("created synth %d\n", synthID)
 }
