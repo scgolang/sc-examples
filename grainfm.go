@@ -1,7 +1,9 @@
 package main
 
 import (
+	"io"
 	"log"
+	"os"
 	"time"
 
 	"github.com/scgolang/sc"
@@ -15,10 +17,28 @@ func main() {
 		Network: "udp",
 		Port:    57120,
 	}
-	if err := server.Start(); err != nil {
+
+	log.Println("starting server...")
+
+	stdout, stderr, err := server.Start(5 * time.Second)
+	if err != nil {
 		log.Fatalf("Could not start scsynth: %s", err)
 	}
 	defer func() { _ = server.Process.Kill() }()
+
+	log.Println("started server")
+
+	go func() {
+		if _, err := io.Copy(os.Stderr, stderr); err != nil {
+			log.Fatalf("Could not pipe scsynth stderr to terminal: %s", err)
+		}
+	}()
+
+	go func() {
+		if _, err := io.Copy(os.Stdout, stdout); err != nil {
+			log.Fatalf("Could not pipe scsynth stdout to terminal: %s", err)
+		}
+	}()
 
 	client, err := sc.NewClient("udp", "127.0.0.1:57110", "127.0.0.1:57120", 5*time.Second)
 	if err != nil {
