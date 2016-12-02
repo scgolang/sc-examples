@@ -22,11 +22,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	errChan := make(chan error)
-	doneChan := make(chan *osc.Message)
-
+	var (
+		errChan  = make(chan error)
+		doneChan = make(chan osc.Message)
+	)
 	dispatcher := osc.Dispatcher{
-		"/done": func(msg *osc.Message) error {
+		"/done": func(msg osc.Message) error {
 			doneChan <- msg
 			return nil
 		},
@@ -36,13 +37,10 @@ func main() {
 			log.Fatal(err)
 		}
 	}()
-	log.Println("sending quit request")
-	quitReq, err := osc.NewMessage("/quit")
-	if err != nil {
-		log.Fatal(err)
-	}
 
-	if err := conn.Send(quitReq); err != nil {
+	log.Println("sending quit message")
+
+	if err := conn.Send(osc.Message{Address: "/quit"}); err != nil {
 		log.Fatal(err)
 	}
 	select {
