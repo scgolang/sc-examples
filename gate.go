@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/scgolang/sc"
+	"github.com/scgolang/scids/scid"
 )
 
 func main() {
@@ -19,16 +20,22 @@ func main() {
 		log.Fatal(err)
 	}
 	def := sc.NewSynthdef(synthName, func(p sc.Params) sc.Ugen {
-		bus, noise := sc.C(0), sc.WhiteNoise{}.Rate(sc.KR)
-		pulse := sc.LFPulse{Freq: sc.C(1.333), Iphase: sc.C(0.5)}.Rate(sc.KR)
-		sig := sc.Gate{In: noise, Trig: pulse}.Rate(sc.AR)
-		return sc.Out{bus, sig}.Rate(sc.AR)
+		var (
+			bus   = sc.C(0)
+			noise = sc.WhiteNoise{}.Rate(sc.KR)
+			pulse = sc.LFPulse{Freq: sc.C(1.333), Iphase: sc.C(0.5)}.Rate(sc.KR)
+			sig   = sc.Gate{In: noise, Trig: pulse}.Rate(sc.AR)
+		)
+		return sc.Out{bus, sc.Multi(sig, sig)}.Rate(sc.AR)
 	})
 	err = client.SendDef(def)
 	if err != nil {
 		log.Fatal(err)
 	}
-	synthID := client.NextSynthID()
+	synthID, err := scid.Next()
+	if err != nil {
+		log.Fatal(err)
+	}
 	_, err = defaultGroup.Synth(synthName, synthID, sc.AddToTail, nil)
 	log.Printf("created synth %d\n", synthID)
 }

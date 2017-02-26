@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/scgolang/sc"
+	"github.com/scgolang/scids/scid"
 )
 
 func main() {
@@ -28,6 +29,7 @@ func main() {
 			AttackTime: sc.C(0.005),
 			DecayTime:  sc.C(0.4),
 		}.Rate(sc.AR)
+		sig = sc.Multi(sig, sig)
 		return sc.Out{bus, sig}.Rate(sc.AR)
 	})
 
@@ -35,7 +37,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	synthID := client.NextSynthID()
+	synthID, err := scid.Next()
+	if err != nil {
+		log.Fatal(err)
+	}
 	if _, err := defaultGroup.Synth(synthName, synthID, sc.AddToTail, nil); err != nil {
 		log.Fatal(err)
 	}

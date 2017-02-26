@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/scgolang/sc"
+	"github.com/scgolang/scids/scid"
 )
 
 func main() {
@@ -29,7 +30,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	synthID := client.NextSynthID()
+	synthID, err := scid.Next()
+	if err != nil {
+		log.Fatal(err)
+	}
 	if _, err := defaultGroup.Synth(synthName, synthID, sc.AddToTail, nil); err != nil {
 		log.Fatal(err)
 	}

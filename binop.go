@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/scgolang/sc"
+	"github.com/scgolang/scids/scid"
 )
 
 func main() {
@@ -30,7 +31,10 @@ func main() {
 
 	time.Sleep(1000 * time.Millisecond)
 
-	id := client.NextSynthID()
+	id, err := scid.Next()
+	if err != nil {
+		log.Fatal(err)
+	}
 	if _, err = client.Synth("Envgen1", id, sc.AddToTail, sc.DefaultGroupID, nil); err != nil {
 		log.Fatal(err)
 	}

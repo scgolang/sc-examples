@@ -10,14 +10,12 @@ import (
 )
 
 func main() {
-	const (
-		synthName = "GrainFMExample"
-	)
+	const synthName = "GrainFMExample"
+
 	server := &sc.Server{
 		Network: "udp",
 		Port:    57120,
 	}
-
 	stdout, stderr, err := server.Start(5 * time.Second)
 	if err != nil {
 		log.Fatalf("Could not start scsynth: %s", err)
