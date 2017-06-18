@@ -47,7 +47,7 @@ func doPlay(selection string) int {
 	if !ok {
 		fmt.Fprintf(os.Stderr, "unrecognized selection: %s\n", selection)
 	}
-	if err := scid.Play(def); err != nil {
+	if err := scid.Play(def, nil); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error)
 		return 1
 	}
